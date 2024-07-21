@@ -1,0 +1,13 @@
+#Basic Probability Puzzle
+from fractions import Fraction
+X=['w']*5+['b']*4
+Y=['w']*7+['b']*6
+cnt=0
+visited=0
+for i in X:
+    temp=Y+[i]
+    for j in temp:
+        if j=='b':
+            cnt+=1
+        visited+=1
+print(Fraction(cnt,visited))
