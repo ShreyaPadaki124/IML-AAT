@@ -1,0 +1,40 @@
+# Enter your code here. Read input from STDIN. Print output to STDOUT
+#Stack Exchange Classifier
+import json
+import re
+import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer,TfidfVectorizer
+from sklearn.svm import LinearSVC
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import SGDClassifier
+cnt=0
+topic=[]
+question=[]
+excerpt=[]
+def words(text):
+    return re.findall(r'(?:[a-zA-Z]+[a-zA-Z\'\-]?[a-zA-Z]|[a-zA-Z]+)',text)
+with open('training.json', 'r') as f:
+    for line in f:
+        cnt+=1
+        if cnt==1:
+            continue
+        pst = json.loads(line)
+        topic.append(pst["topic"])
+        abc=pst["question"]+"\r\n"+pst["excerpt"]
+        sen="".join(word for word in words(abc))
+        excerpt.append(abc)
+x_train=np.array(excerpt)
+y_train=topic
+txt_clf=Pipeline([('vect',CountVectorizer()),
+                  ('tfidf',TfidfTransformer()),
+                  ('clf',LinearSVC())])
+txt_clf.fit(x_train, y_train)
+_test=[]
+for i in range(int(input())):
+    h=json.loads(input())
+    _test.append(h['question']+"\r\n"+h['excerpt'])
+predicted=txt_clf.predict(_test)
+for i in predicted:
+    print(i)
